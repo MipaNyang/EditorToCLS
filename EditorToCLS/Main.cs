@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using System.Reflection;
@@ -9,8 +9,8 @@ using static UnityModManagerNet.UnityModManager;
 public class Main
 {
     private static Harmony harmony;
-    private static KeyCode keyCode = KeyCode.F3; // 기본 키 설정
-    private static KeyCode keyCodeWithNoFailMod = KeyCode.F4; // 기본 F4 키 설정
+    private static KeyCode keyCode = KeyCode.F3; 
+    private static KeyCode keyCodeWithNoFailMod = KeyCode.F4; 
     private static bool isWaitingForKey = false;
     private static bool isWaitingForKeyF4 = false;
     private static string settingsFilePath;
@@ -44,14 +44,13 @@ public class Main
 
     private static void OnUpdate(ModEntry modEntry, float deltaTime)
     {
-        // 키 입력 대기 상태일 때 키를 감지
         if (isWaitingForKey && Input.anyKeyDown)
         {
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
                 if (Input.GetKeyDown(key))
                 {
-                    keyCode = key; // 키 변경
+                    keyCode = key; 
                     isWaitingForKey = false;
                     SaveSettings();
                     break;
@@ -109,16 +108,15 @@ public class Main
     {
         GUILayout.BeginHorizontal();
         GUILayout.Label("KeyCode: " + keyCode.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
-        if (GUILayout.Button(isWaitingForKey ? "..." : "Set Key", GUILayout.Width(80), GUILayout.Height(20)))
+        if (GUILayout.Button(isWaitingForKey ? "Prass any key.." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
         {
             isWaitingForKey = true; 
         }
         GUILayout.EndHorizontal();
 
-        // F4 키 설정 UI
         GUILayout.BeginHorizontal();
         GUILayout.Label("KeyCodeWithNoFailMod: " + keyCodeWithNoFailMod.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
-        if (GUILayout.Button(isWaitingForKeyF4 ? "..." : "Set Key", GUILayout.Width(80), GUILayout.Height(20)))
+        if (GUILayout.Button(isWaitingForKeyF4 ? "Prass any key.." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
         {
             isWaitingForKeyF4 = true; 
         }
