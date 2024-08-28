@@ -65,7 +65,7 @@ public class Main
             {
                 if (Input.GetKeyDown(key))
                 {
-                    keyCodeWithNoFailMod = key; // F4 키 변경
+                    keyCodeWithNoFailMod = key;
                     isWaitingForKeyF4 = false;
                     SaveSettings();
                     break;
@@ -107,12 +107,11 @@ public class Main
 
     private static void OnGUI(ModEntry modEntry)
     {
-        // 현재 키 설정 UI
         GUILayout.BeginHorizontal();
         GUILayout.Label("KeyCode: " + keyCode.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
         if (GUILayout.Button(isWaitingForKey ? "..." : "Set Key", GUILayout.Width(80), GUILayout.Height(20)))
         {
-            isWaitingForKey = true; // 키 변경 대기 상태
+            isWaitingForKey = true; 
         }
         GUILayout.EndHorizontal();
 
@@ -121,14 +120,13 @@ public class Main
         GUILayout.Label("KeyCodeWithNoFailMod: " + keyCodeWithNoFailMod.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
         if (GUILayout.Button(isWaitingForKeyF4 ? "..." : "Set Key", GUILayout.Width(80), GUILayout.Height(20)))
         {
-            isWaitingForKeyF4 = true; // F4 키 변경 대기 상태
+            isWaitingForKeyF4 = true; 
         }
         GUILayout.EndHorizontal();
     }
 
     private static void SaveSettings()
     {
-        // 설정 파일에 현재 키 설정 저장
         XDocument settingsDoc = new XDocument(
             new XElement("Settings",
                 new XElement("KeyCode", keyCode.ToString()),
@@ -141,10 +139,9 @@ public class Main
 
     private static void LoadSettings()
     {
-        // 설정 파일에서 키 설정 불러오기
         if (!File.Exists(settingsFilePath))
         {
-            return; // 설정 파일이 없으면 기본 값을 사용
+            return; 
         }
 
         XDocument settingsDoc = XDocument.Load(settingsFilePath);
