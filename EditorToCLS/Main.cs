@@ -51,12 +51,4 @@ public class Main
         controllerInstance.LoadCustomLevel(levelPath, "");
     }
 
-    [HarmonyPatch(typeof(scrController), "LoadCustomLevel")]
-    public static class LoadCustomLevel_Patch
-    {
-        [HarmonyPrefix]
-        public static void Prefix(scrController __instance, ref string levelPath, ref string levelId)
-        {
-        }
-    }
 }
