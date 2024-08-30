@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using System.Reflection;
@@ -9,11 +9,17 @@ using static UnityModManagerNet.UnityModManager;
 public class Main
 {
     private static Harmony harmony;
-    private static KeyCode keyCode = KeyCode.F3; 
-    private static KeyCode keyCodeWithNoFailMod = KeyCode.F4; 
-    private static bool isWaitingForKey = false;
-    private static bool isWaitingForKeyF4 = false;
+    private static KeyCode keyCode = KeyCode.F3;
+    private static KeyCode keyCodeWithNoFailMod = KeyCode.F4;
+    private static KeybindOption inputAwaitingOption = KeybindOption.None;
     private static string settingsFilePath;
+
+    private enum KeybindOption
+    {
+        None,
+        OpenLevel,
+        OpenLevelWithNoFail
+    }
 
     public static bool Start(ModEntry modEntry)
     {
@@ -44,28 +50,21 @@ public class Main
 
     private static void OnUpdate(ModEntry modEntry, float deltaTime)
     {
-        if (isWaitingForKey && Input.anyKeyDown)
+        if (inputAwaitingOption != KeybindOption.None && Input.anyKeyDown)
         {
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
                 if (Input.GetKeyDown(key))
                 {
-                    keyCode = key; 
-                    isWaitingForKey = false;
-                    SaveSettings();
-                    break;
-                }
-            }
-        }
-
-        if (isWaitingForKeyF4 && Input.anyKeyDown)
-        {
-            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-            {
-                if (Input.GetKeyDown(key))
-                {
-                    keyCodeWithNoFailMod = key;
-                    isWaitingForKeyF4 = false;
+                    if (inputAwaitingOption == KeybindOption.OpenLevel)
+                    {
+                        keyCode = key;
+                    }
+                    else if (inputAwaitingOption == KeybindOption.OpenLevelWithNoFail)
+                    {
+                        keyCodeWithNoFailMod = key;
+                    }
+                    inputAwaitingOption = KeybindOption.None;
                     SaveSettings();
                     break;
                 }
@@ -87,13 +86,13 @@ public class Main
 
     private static void LoadCustomLevelFromScnGame()
     {
-        scnGame gameInstance = Object.FindObjectOfType<scnGame>();
+        scnGame gameInstance = scnGame.instance;
         if (gameInstance == null) return;
 
         string levelPath = gameInstance.levelPath;
         if (string.IsNullOrEmpty(levelPath)) return;
 
-        scrController controllerInstance = Object.FindObjectOfType<scrController>();
+        scrController controllerInstance = scrController.instance;
         if (controllerInstance == null) return;
 
         controllerInstance.LoadCustomLevel(levelPath, "");
@@ -107,18 +106,18 @@ public class Main
     private static void OnGUI(ModEntry modEntry)
     {
         GUILayout.BeginHorizontal();
-        GUILayout.Label("KeyCode: " + keyCode.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
-        if (GUILayout.Button(isWaitingForKey ? "Prass any key.." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
+        GUILayout.Label($"Keybind for opening level in CLS: {keyCode}", GUILayout.Width(500), GUILayout.ExpandWidth(false));
+        if (GUILayout.Button(inputAwaitingOption == KeybindOption.OpenLevel ? "Press any key..." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
         {
-            isWaitingForKey = true; 
+            inputAwaitingOption = KeybindOption.OpenLevel;
         }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("KeyCodeWithNoFailMod: " + keyCodeWithNoFailMod.ToString(), GUILayout.Width(300), GUILayout.ExpandWidth(false));
-        if (GUILayout.Button(isWaitingForKeyF4 ? "Prass any key.." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
+        GUILayout.Label($"Keybind for opening level in CLS with No-Fail mod: {keyCodeWithNoFailMod}", GUILayout.Width(500), GUILayout.ExpandWidth(false));
+        if (GUILayout.Button(inputAwaitingOption == KeybindOption.OpenLevelWithNoFail ? "Press any key..." : "Set Key", GUILayout.Width(150), GUILayout.Height(20)))
         {
-            isWaitingForKeyF4 = true; 
+            inputAwaitingOption = KeybindOption.OpenLevelWithNoFail;
         }
         GUILayout.EndHorizontal();
     }
@@ -139,7 +138,7 @@ public class Main
     {
         if (!File.Exists(settingsFilePath))
         {
-            return; 
+            return;
         }
 
         XDocument settingsDoc = XDocument.Load(settingsFilePath);
