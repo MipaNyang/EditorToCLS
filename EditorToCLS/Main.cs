@@ -138,6 +138,7 @@ public class Main
     {
         if (!File.Exists(settingsFilePath))
         {
+            SaveDefaultSettings();
             return;
         }
 
@@ -161,5 +162,17 @@ public class Main
                 keyCodeWithNoFailMod = loadedKeyCodeF4;
             }
         }
+    }
+
+    private static void SaveDefaultSettings()
+    {
+        XDocument settingsDoc = new XDocument(
+            new XElement("Settings",
+                new XElement("KeyCode", keyCode.ToString()), 
+                new XElement("KeyCodeWithNoFailMod", keyCodeWithNoFailMod.ToString()) 
+            )
+        );
+
+        settingsDoc.Save(settingsFilePath);
     }
 }
